@@ -1,0 +1,80 @@
+#!/bin/bash
+#
+# Perform necessary berta setup steps
+# after package is installed.
+#
+
+PROGNAME=$(basename $0)
+INSTALLER_DIR=`dirname $0`
+DEST_DIR=/opt/berta
+CONFIG_DIR=/etc/berta
+BIN_DIR=/usr/bin
+CRON_DIR=/etc/cron.d
+INIT_DIR=/etc/init.d
+
+RUN_DIR=/var/run/berta
+LOG_DIR=/var/log/berta
+BERTA_CONFIG_FILE=$CONFIG_DIR/berta.yml
+BERTA_EMAIL_FILE=$CONFIG_DIR/email.erb
+
+RUBY_VERSION=2.1.0
+BERTA_VERSION=1.1.0
+
+EMBEDDED_GEM_ROOT=$DEST_DIR/embedded/lib/ruby/gems/$RUBY_VERSION/gems/berta-$BERTA_VERSION
+
+function error_exit
+{
+  echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
+  exit 1
+}
+
+# chown
+chown -R root:root $DEST_DIR || error_exit "Cannot chown $DEST_DIR to root:root"
+
+# create the berta user
+id -u berta > /dev/null 2>&1
+if [ "$?" -ne "0" ]; then
+  useradd --system --shell /bin/false --home /var/lib/berta --create-home berta || error_exit "Cannot create the berta user account"
+  usermod -L berta || error_exit "Cannot lock the berta user account"
+fi
+
+# prepare runtime dirs
+mkdir -p $RUN_DIR || error_exit "Cannot create $RUN_DIR"
+chown berta:berta $RUN_DIR || error_exit "Cannot chown $RUN_DIR to berta:berta"
+
+mkdir -p $LOG_DIR || error_exit "Cannot create $LOG_DIR"
+chown berta:berta $LOG_DIR || error_exit "Cannot chown $LOG_DIR to berta:berta"
+
+# prepare configuration dir
+mkdir -p $CONFIG_DIR || error_exit "Cannot create $CONFIG_DIR"
+chown root:root $CONFIG_DIR || error_exit "Cannot chown $CONFIG_DIR to root:root"
+
+BERTA_CONFIG_FILE_DEST=$BERTA_CONFIG_FILE
+if [ -f "$BERTA_CONFIG_FILE" ]; then
+  BERTA_CONFIG_FILE_DEST=$BERTA_CONFIG_FILE.new
+fi
+
+BERTA_EMAIL_FILE_DEST=$BERTA_EMAIL_FILE
+if [ -f "$BERTA_EMAIL_FILE" ]; then
+  BERTA_EMAIL_FILE_DEST=$BERTA_EMAIL_FILE.new
+fi
+
+cp $EMBEDDED_GEM_ROOT/config/berta.yml $BERTA_CONFIG_FILE_DEST || error_exit "Cannot create $BERTA_CONFIG_FILE_DEST"
+cp $EMBEDDED_GEM_ROOT/config/email.erb $BERTA_EMAIL_FILE_DEST || error_exit "Cannot create $BERTA_EMAIL_FILE_DEST"
+
+# symlink bin files into $BIN_DIR
+ln -sf $DEST_DIR/bin/berta $BIN_DIR || error_exit "Cannot link berta to $BIN_DIR"
+
+# set up cron integration
+if [ -d "$CRON_DIR" ]; then
+  cp $EMBEDDED_GEM_ROOT/examples/etc/cron.d/berta $CRON_DIR || error_exit "Cannot register berta in $CRON_DIR"
+fi
+
+# set up init scripts
+if [ -d "$INIT_DIR" ]; then
+  cp $EMBEDDED_GEM_ROOT/examples/etc/init.d/berta-cron $INIT_DIR || error_exit "Cannot register berta-cron in $INIT_DIR"
+fi
+
+echo "Thank you for installing berta!"
+
+exit 0

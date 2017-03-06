@@ -1,0 +1,51 @@
+#!/bin/bash
+#
+# Perform necessary oneacct-export removal steps
+# after package is uninstalled.
+#
+
+PROGNAME=$(basename $0)
+INSTALLER_DIR=`dirname $0`
+DEST_DIR=/opt/oneacct-export
+CONFIG_DIR=/etc/oneacct-export
+BIN_DIR=/usr/bin
+CRON_DIR=/etc/cron.d
+INIT_DIR=/etc/init.d
+
+function error_exit
+{
+  echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
+  exit 1
+}
+
+if [ "X$1" = "Xupgrade" ] || [ "X$1" = "X1" ]; then
+  echo "Skipping clean-up, this is an upgrade!"
+  exit 0
+fi
+
+# clean up cron integration
+if [ -f "$CRON_DIR/oneacct-export" ]; then
+  rm $CRON_DIR/oneacct-export
+fi
+
+# clean up init scripts
+if [ -f "$INIT_DIR/oneacct-export-cron" ]; then
+  rm $INIT_DIR/oneacct-export-cron
+fi
+
+if [ -f "$INIT_DIR/oneacct-export-sidekiq" ]; then
+  rm $INIT_DIR/oneacct-export-sidekiq
+fi
+
+# clean up links
+if [ -L "$BIN_DIR/oneacct-export" ]; then
+  rm $BIN_DIR/oneacct-export
+fi
+
+if [ -L "$BIN_DIR/oneacct-export-cron" ]; then
+  rm $BIN_DIR/oneacct-export-cron
+fi
+
+echo "oneacct-export has been uninstalled!"
+
+exit 0

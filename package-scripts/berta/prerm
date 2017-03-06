@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+# Perform necessary berta setup steps
+# prior to installing package.
+#
+
+PROGNAME=$(basename $0)
+
+function error_exit
+{
+  echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
+  exit 1
+}
+
+# stop cron service
+service berta-cron stop
+
+exit 0
