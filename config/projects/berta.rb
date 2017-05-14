@@ -6,7 +6,7 @@ homepage 'https://github.com/dudoslav/berta'
 description 'A tool checking all running VMs on an OpenNebula-based cloud for a pre-set expiration date.'
 
 install_dir     '/opt/berta'
-build_version   "1.4.0"
+build_version   "1.4.1"
 build_iteration 1
 
 override :rubygems, :version => '2.4.8'
