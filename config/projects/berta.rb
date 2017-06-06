@@ -3,10 +3,10 @@ require 'facter'
 name 'berta'
 maintainer 'Boris Parak <parak@cesnet.cz>'
 homepage 'https://github.com/dudoslav/berta'
-description 'A tool checking all running VMs on an OpenNebula-based cloud for a pre-set expiration date.'
+description 'Tool enforcing a pre-set expiration date on VMs in an OpenNebula-based cloud.'
 
 install_dir     '/opt/berta'
-build_version   "1.5.2"
+build_version   "1.6.0"
 build_iteration 1
 
 override :rubygems, :version => '2.4.8'
