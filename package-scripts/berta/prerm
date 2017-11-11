@@ -12,7 +12,4 @@ function error_exit
   exit 1
 }
 
-# stop cron service
-service berta-cron stop
-
 exit 0

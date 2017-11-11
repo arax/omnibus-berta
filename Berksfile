@@ -4,7 +4,6 @@ source 'https://api.berkshelf.com'
 # systems, since the cache can become stale on older boxes.
 cookbook 'apt', '~> 2.0'
 cookbook 'yum-epel', '~> 0.6.5'
-cookbook 'resolver'
 
 cookbook 'omnibus'
 

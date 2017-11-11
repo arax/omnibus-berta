@@ -12,30 +12,45 @@ BIN_DIR=/usr/bin
 CRON_DIR=/etc/cron.d
 INIT_DIR=/etc/init.d
 
+RUN_DIR=/var/run/berta
+LOG_DIR=/var/log/berta
+
 function error_exit
 {
   echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
   exit 1
 }
 
-if [ "X$1" = "Xupgrade" ] || [ "X$1" = "X1" ]; then
-  echo "Skipping clean-up, this is an upgrade!"
-  exit 0
-fi
+if [ "X$1" = "Xpurge" ] || [ "X$1" = "X0" ]; then
+  # clean up config files
+  if [ -d "$CONFIG_DIR" ]; then
+    rm -rf "$CONFIG_DIR" || error_exit "Could not unlink $CONFIG_DIR"
+  fi
 
-# clean up cron integration
-if [ -f "$CRON_DIR/berta" ]; then
-  rm $CRON_DIR/berta
-fi
+  # clean up log files
+  if [ -d "$LOG_DIR" ]; then
+    rm -rf "$LOG_DIR" || error_exit "Could not unlink $LOG_DIR"
+  fi
 
-# clean up init scripts
-if [ -f "$INIT_DIR/berta-cron" ]; then
-  rm $INIT_DIR/berta-cron
-fi
+  # clean up cron integration
+  if [ -f "$CRON_DIR/berta" ]; then
+    rm $CRON_DIR/berta || error_exit "Could not unlink $CRON_DIR"
+  fi
 
-# clean up links
-if [ -L "$BIN_DIR/berta" ]; then
-  rm $BIN_DIR/berta
+  # clean up init scripts
+  if [ -f "$INIT_DIR/berta-cron" ]; then
+    rm $INIT_DIR/berta-cron || error_exit "Could not unlink init script"
+  fi
+
+  # clean up links
+  if [ -L "$BIN_DIR/berta" ]; then
+    rm $BIN_DIR/berta || error_exit "Could not unlink binary link"
+  fi
+
+  # make sure everything is gone
+  if [ -d "$DEST_DIR" ]; then
+    rm -rf "$DEST_DIR" || error_exit "Could not unlink $DEST_DIR"
+  fi
 fi
 
 echo "berta has been uninstalled!"

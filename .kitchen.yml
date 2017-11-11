@@ -2,7 +2,7 @@ driver:
   name: vagrant
   customize:
     cpus: 2
-    memory: 4096
+    memory: 2048
   synced_folders:
     - ['.', '/home/vagrant/berta']
 
@@ -11,24 +11,14 @@ provisioner:
   require_chef_omnibus: 12.4.0
 
 platforms:
-  - name: ubuntu-12.04
-    run_list: apt::default
-  - name: ubuntu-14.04
-    run_list: apt::default
   - name: ubuntu-16.04
     run_list: apt::default
-  - name: centos-6.7
-  - name: centos-7.2
+  - name: centos-7
     run_list: yum-epel::default
-  - name: debian-7.9
-    run_list: apt::default
-  - name: debian-8.3
-    run_list: apt::default
 
 suites:
   - name: default
     run_list:
-      - resolver::default
       - omnibus::default
       - omnibus-build::default
     attributes:
@@ -36,9 +26,3 @@ suites:
         build_user:  vagrant
         build_dir:   /home/vagrant/berta
         install_dir: /opt/berta
-      resolver:
-        nameservers:
-          - 8.8.8.8
-          - 147.251.4.33
-          - 147.251.6.10
-        search: ics.muni.cz

@@ -17,8 +17,8 @@ LOG_DIR=/var/log/berta
 BERTA_CONFIG_FILE=$CONFIG_DIR/berta.yml
 BERTA_EMAIL_FILE=$CONFIG_DIR/email.erb
 
-RUBY_VERSION=2.1.0
-BERTA_VERSION=1.6.0
+RUBY_VERSION=2.4.0
+BERTA_VERSION=2.0.0
 
 EMBEDDED_GEM_ROOT=$DEST_DIR/embedded/lib/ruby/gems/$RUBY_VERSION/gems/berta-$BERTA_VERSION
 
@@ -61,6 +61,10 @@ fi
 
 cp $EMBEDDED_GEM_ROOT/config/berta.yml $BERTA_CONFIG_FILE_DEST || error_exit "Cannot create $BERTA_CONFIG_FILE_DEST"
 cp $EMBEDDED_GEM_ROOT/config/email.erb $BERTA_EMAIL_FILE_DEST || error_exit "Cannot create $BERTA_EMAIL_FILE_DEST"
+
+if [ -f "$BERTA_CONFIG_FILE_DEST" ]; then
+  sed -i "s/email-template:[[:space:]]\+#/email-template: \/etc\/berta\/email.erb #/g" "$BERTA_CONFIG_FILE_DEST"
+fi
 
 # symlink bin files into $BIN_DIR
 ln -sf $DEST_DIR/bin/berta $BIN_DIR || error_exit "Cannot link berta to $BIN_DIR"
