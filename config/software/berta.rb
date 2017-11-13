@@ -1,6 +1,6 @@
 name "berta"
 ## WARN: do not forget to change BERTA_VERSION in the postinst script
-default_version "2.0.0"
+default_version "2.0.1"
 
 dependency "ruby"
 dependency "rubygems"

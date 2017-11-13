@@ -4,7 +4,7 @@ homepage 'https://github.com/the-berta-project/berta'
 description 'Tool enforcing a pre-set expiration date on VMs in an OpenNebula-based cloud.'
 
 install_dir     '/opt/berta'
-build_version   "2.0.0"
+build_version   "2.0.1"
 build_iteration 1
 
 override :rubygems, :version => '2.6.8'
